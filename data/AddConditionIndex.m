@@ -31,7 +31,9 @@ function [SortInfo,nvox] = AddConditionIndex(d,condition)
             end
             
         case {'interleave','interleaved'}
-            z = d.subject == '1' & d.example == '1';
+            z = d.subject == '1' & ...
+                d.example_id == '1' & ...
+                ismember(d.unit_category,{'SH','AH','noise'});
             tmp = d(z,{
                 'subject'
                 'unit_category'
@@ -39,53 +41,24 @@ function [SortInfo,nvox] = AddConditionIndex(d,condition)
                 'unit_id_by_category'
                 'unit_contribution'
                 });
-            tmp.condition = categorical();
-            n = sum([N.SH,N.AH,N.noise]);
-            IJK = zeros(sum(nAll),3);
-            n = nvox ./ [4,2,4];
-            blkstr = {[0,1,0,1],[0,0],[0,1,0,1]};
-            for ii=1:3
-                if sh(ii)
-                    ix1 = (1:nvox(ii)) + sum(nvox(1:ii-1));
-                    ix2 = (ix1(end)+1):(ix1(end)+nArb(ii)); 
-                    m = length(blkstr{ii});
-                    [i,j,k] = ndgrid(ii,[1:n(ii)],blkstr{ii});
-                    IJK(ix1,:)=[i(:),j(:),k(:)];
-                    [i,j,k] = ndgrid(ii,mod(0:narb(ii)-1,n(ii))+1,blkstr{ii}(1:m/2));
-                    IJK(ix2,:)=[i(:),j(:),k(:)];
-                else
-                    ix = (1:nAll(ii)) + sum(nAll(1:ii-1));
-                    IJK(ix,1) = ii;
-                    IJK(ix,2) = 1:nAll(ii);
-                end
-            end
-            %% Generate sort
-            [~,ix] = sortrows(IJK);
-            [~,xi] = sort(ix);
-            %% Apply sort
-            X = cell2mat(d);
-            X = X(:,ix);
-            d = mat2cell(X,repmat(nitem,nsub,1),nAll);
-        
+            tmp.condition = categorical(ones(nnz(z),1),1,{'interleaved'});
+            [~,ix] = sort(mod(str2double(cellstr(tmp.unit_id_by_category)) - 1, N.SH));
+            
         case 'blocked_interleave'
-            IJK = zeros(sum(nAll),3);
-            n = nvox ./ [4,2,4];
-            blkstr = {[0,1,0,1],[0,0],[0,1,0,1]};
-            for ii=1:3
-                if sh(ii)
-                    ix1 = (1:nvox(ii)) + sum(nvox(1:ii-1));
-                    ix2 = (ix1(end)+1):(ix1(end)+nArb(ii)); 
-                    m = length(blkstr{ii});
-                    [i,j,k] = ndgrid(ii,[1:n(ii)],blkstr{ii});
-                    IJK(ix1,:)=[i(:),j(:),k(:)];
-                    [i,j,k] = ndgrid(ii,mod(0:narb(ii)-1,n(ii))+1,blkstr{ii}(1:m/2));
-                    IJK(ix2,:)=[i(:),j(:),k(:)];
-                else
-                    ix = (1:nAll(ii)) + sum(nAll(1:ii-1));
-                    IJK(ix,1) = ii;
-                    IJK(ix,2) = ix;
-                end
-            end
+            z = d.subject == '1' & ...
+                d.example_id == '1' & ...
+                ismember(d.unit_category,{'SH','AH','noise'});
+            tmp = d(z,{
+                'subject'
+                'unit_category'
+                'unit_id'
+                'unit_id_by_category'
+                'unit_contribution'
+                });
+            tmp.condition = categorical(ones(nnz(z),1),1,{'interleaved'});
+            [~,ix] = sort(mod(str2double(cellstr(tmp.unit_id_by_category)) - 1, N.SH));
+            
+            
             % This is the new bit for blocked interleaving
             IJK(ix1(1:7),3) = 2; % systematic hidden
             IJK(ix1(8:14),3) = 3; % idiosyncratic hidden
