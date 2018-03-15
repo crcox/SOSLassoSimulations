@@ -13,7 +13,7 @@ gr = repmat([
     repmat(5,18,1)
     repmat(6,18,1)
     ], 10*72, 1); %#ok<REPMAT>
-gr = categorical(gr, 1:6, {'SI','AI','SH','AH','SO','AO'});
+gr = categorical(gr, 1:8, {'SI','AI','SH','AH','SO','AO','noise','padding'},'Ordinal',true);
 gu = repmat([
     (1:18)'
     (1:18)'
@@ -32,24 +32,16 @@ uc = repmat([
     repmat(2, 9,1)
     repmat(0,18,1)
     ], 10*72, 1); %#ok<REPMAT>
+gu = categorical(gu);
 uc = categorical(uc, 0:3, {'neither','A','B','both'});
 aa = reshape(tmp(:,3:end)',numel(i),1);
 
-% Isolate regions
-groupsToIsolate = {{'SI','AI'},{'SH','AH'},{'SO','AO'}};
-gapSize = 28; % units
-AddPadding(d, groupsToIsolate, gapSize);
-
-% Shuffle and Dilute
-GroupsToShuffle = {'SH','AH'};
-DiluteInfo = struct('nunits', 28, 'value', 0);
-ShuffleMethod = 'blocked_permute';
-
-
-
 % Coordinates
-% The coordinate values assigned to each 
-d = table(i(:),ct,j(:),gr,k(:),gu,uc,aa, ...
+% The coordinate values assigned to each
+ss = categorical(i(:));
+ee = categorical(j(:));
+uu = categorical(k(:));
+d = table(ss,ct,ee,gr,uu,gu,uc,aa, ...
     'VariableNames',{
         'subject'
         'example_category'
@@ -61,5 +53,21 @@ d = table(i(:),ct,j(:),gr,k(:),gu,uc,aa, ...
         'activation'
     });
 
+% Note, it is important to add noise first, and then add padding.
+% Add noise units to increase chance of false alarms/make true signal more
+% sparse
+MaximumNoiseUnits = 28; % units
+d = AddNoiseUnits(d, MaximumNoiseUnits);
 
-d(1:10,:)
+% Add units for padding
+GroupsToIsolate = {{'SI','AI'},{'SH','AH'},{'SO','AO'},{'noise'}};
+MaximumGapSize = 28; % units
+d = AddPaddingUnits(d, GroupsToIsolate, MaximumGapSize);
+
+% Sort the noise and padding to integrate with each subject and example.
+d = sortrows(d,1:7);
+
+% Shuffle and Dilute
+GroupsToShuffle = {'SH','AH'};
+DiluteInfo = struct('nunits', 28, 'value', 0);
+ShuffleMethod = 'blocked_permute';
