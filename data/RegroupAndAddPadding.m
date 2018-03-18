@@ -1,13 +1,25 @@
-function D = AddNoiseUnits(d,n)
+function D = RegroupAndAddPadding(d,groups,sz)
+	subjects = categories(d.subject);
+    example_id = categories(d.example_id);
+    z = d.subject == subjects{1} & ...
+        d.example_id == example_id{1};
+	N = cell2struct( ...
+        num2cell(countcats(d.unit_category(z))), ...
+        categories(d.unit_category));
+    N.subjects = numel(subjects);
+    N.examples = numel(example_id);
+
+    ngroups = numel(groups);
     subjects = categories(d.subject);
     examples = categories(d.example_id);
+    nPaddingUnits = (ngroups) * sz;
     
-    [k,j,i] = ndgrid(1:n,str2double(examples),str2double(subjects));  
+    [k,j,i] = ndgrid(1:nPaddingUnits,str2double(examples),str2double(subjects));  
     subject = categorical(i(:));
     example_id = categorical(j(:));
     example_category = categorical(j(:) > 36, [0,1], {'A','B'});
     unit_category = categorical( ...
-        ones(numel(k),1) * 7, ...
+        ones(numel(k),1) * 8, ...
         1:8, ...
         {'SI','AI','SH','AH','SO','AO','noise','padding'}, ...
         'Ordinal',true);
@@ -36,5 +48,5 @@ function D = AddNoiseUnits(d,n)
             'activation'
         });
         
-	D = sortrows([d;e],1:7);
+	D = sortrows([d;e], 1:7);
 end
