@@ -1,4 +1,24 @@
 function D = AddPaddingUnits(d,groups,sz)
+% ADDPADDINGUNITS Add units and reindex to isolate groups of units.
+%
+% This function does two things. First, it extends the representation for
+% each example/subject to include enough padding units to fully isolate the
+% number of groups provided (in this case, 3). This also extends the
+% unit_id range, and because we are adding padding units last they will be
+% associated with the highest unit_ids.
+%
+% Second, the function creates a new index, "padded_unit_id", which is a
+% re-ordered version of unit_id where the padding units indexed so that the
+% fall between the groups defined below, and such that sets of units that
+% are grouped together have contiguous padded_unit_ids. In order words,
+% while "unit_id" basically indexes in the order of addition to the
+% AnnotatedData table, "padded_unit_id" will reflect and ordering of units
+% that incorporates noise and padding into positions that are more
+% meaningful for the subsequent simulations.
+%
+% (A second new variable, called "padded_blocks", is also created. It
+% groups the units with respect to the GroupsToIsolate structure, and
+% allocated the right amount of padding to each.)
 	subjects = categories(d.subject);
     example_id = categories(d.example_id);
     z = d.subject == subjects{1} & ...
@@ -32,7 +52,6 @@ function D = AddPaddingUnits(d,groups,sz)
     cur = sz / 2;
     for i = 1:numel(groups)
         a = cur + 1;
-        b = cur + sz;
         if i == numel(groups)
             b = cur + (sz / 2);
         else

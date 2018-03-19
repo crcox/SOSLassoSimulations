@@ -1,4 +1,16 @@
-function [coords, data] = GenerateCoordinates(d, SortIndex)
+function [coords, data, filters] = GenerateCoordinates(d, SortIndex)
+% GENERATECOORDINATES Compose coordinates based on 
+%
+%
+
+    % Sorting is important because it will govern the order of columns in
+    % data.X matrices. Note that the ordering is by the padded_unit_id!
+	d = sortrows(d, {
+        'subject'
+        'example_category'
+        'example_id'
+        'padded_unit_id'
+        });
     subjects = categories(d.subject);
     example_id = categories(d.example_id);
     unit_categories = categories(d.unit_category);
@@ -21,10 +33,7 @@ function [coords, data] = GenerateCoordinates(d, SortIndex)
         'ind', [], ...
         'ijk', [], ...
         'xyz', []);
-    data = struct( ...
-        'subject',num2cell(i(:)), ...
-        'condition',conditions(j(:)), ...
-        'X', []);
+    
     for i = 1:numel(conditions)
         for j = 1:numel(subjects)
             z = SortIndex.subject == subjects{j} & ...
@@ -37,17 +46,28 @@ function [coords, data] = GenerateCoordinates(d, SortIndex)
             index(z) = index_uc(S.index);
             ijk = [index, D.padded_blocks, zeros(size(index))];
 
-            z = d.subject == subjects{j};
-            y = [data.subject] == j & strcmp(conditions{i}, {data.condition});
-            
-            coords(y).ind = index;
-            coords(y).ijk = ijk;
-            coords(y).xyz = ijk;
-            data(y).X = reshape(d.activation(z), ...
-                N.units, ...
-                N.examples)';
+            z = [coords.subject] == j & strcmp(conditions{i}, {coords.orientation});           
+            coords(z).ind = index;
+            coords(z).ijk = ijk;
+            coords(z).xyz = ijk;
         end
     end
-        
-    
-    
+    data = struct( ...
+        'subject',num2cell(1:10), ...
+        'X', []);
+    for i = 1:numel(subjects)
+        z = d.subject == subjects{j};
+        data(i).X = reshape(d.distorted_activation(z), ...
+            N.units, ...
+            N.examples)';
+    end
+    filters = struct( ...
+        'subject', num2cell(1:10), ...
+        'label', {'not_padding'}, ...
+        'dimension', 2, ...
+        'filter', []);
+    for i = 1:numel(subjects)
+        z = d.subject == subjects{i} & d.example_id == example_id{1};
+        filters(i).filter = d.unit_category(z) ~= 'padding';
+    end
+end
