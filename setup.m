@@ -104,7 +104,8 @@ AnnotatedData = AddPaddingUnits(AnnotatedData, GroupsToIsolate, MaximumGapSize);
 %% Distort signal
 NoiseFunc = @(n) (randn(n,1) * 1) + 0;
 UnitsToDistort = {'SI','AI','SH','AH','SO','AO','noise','padding'};
-AnnotatedData = DistortSignal(AnnotatedData, UnitsToDistort, NoiseFunc);
+[AnnotatedData, noise] = DistortSignal(AnnotatedData, UnitsToDistort, NoiseFunc);
+[AnnotatedData] = DistortSignal(AnnotatedData, UnitsToDistort, noise * 0.8);
 
 %% Generate Conditions and Coordinates
 % ==========
