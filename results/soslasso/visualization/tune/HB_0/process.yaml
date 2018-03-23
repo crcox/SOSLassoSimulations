@@ -1,6 +1,6 @@
 # Specify in KB, MB, or GB.
 # No space between numbers and letters.
-request_memory: "400MB"
+request_memory: "600MB"
 request_disk: "2GB"
 
 # If your jobs are less than 4 hours long, "flock" them additionally to

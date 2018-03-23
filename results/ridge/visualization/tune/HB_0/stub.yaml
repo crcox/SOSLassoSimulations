@@ -1,14 +1,13 @@
-# LASSO
+# RIDGE
 # =====
-regularization: lasso
+regularization: ridge
 
 # Parameters
 # ----------
-regularization: lasso
 bias: 0
 lamSOS: 0
-lamL1: {args: [0, 0.14], distribution: uniform}
-HYPERBAND: {aggressiveness: 3, budget: 100, hyperparameters: [lamL1]}
+lamL2: {args: [0, 0.5], distribution: uniform}
+HYPERBAND: {aggressiveness: 3, budget: 100, hyperparameters: [lamL2]}
 normalize_data: zscore
 normalize_target: none
 

@@ -1,1 +1,7 @@
 *.asv
+results/lasso/visualization/tune/HB_0/
+results/ridge/visualization/tune/HB_0/.njobs
+results/ridge/visualization/tune/HB_0/
+results/soslasso/visualization/tune/HB_0/
+results/soslasso/visualization/tune_debug/.njobs
+results/soslasso/visualization/tune_debug/
