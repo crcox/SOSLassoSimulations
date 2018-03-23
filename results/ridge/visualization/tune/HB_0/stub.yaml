@@ -1,0 +1,74 @@
+# RIDGE
+# =====
+regularization: ridge
+
+# Parameters
+# ----------
+bias: 0
+lamSOS: 0
+lamL2: {args: [0, 0.5], distribution: uniform}
+HYPERBAND: {aggressiveness: 3, budget: 100, hyperparameters: [lamL2]}
+normalize_data: zscore
+normalize_target: none
+
+# Data and Metadata Paths
+# =======================
+data:
+  - /home/nu_crcox/Simulation/SOSLassoSimulations/data/s01.mat
+  - /home/nu_crcox/Simulation/SOSLassoSimulations/data/s02.mat
+  - /home/nu_crcox/Simulation/SOSLassoSimulations/data/s03.mat
+  - /home/nu_crcox/Simulation/SOSLassoSimulations/data/s04.mat
+  - /home/nu_crcox/Simulation/SOSLassoSimulations/data/s05.mat
+  - /home/nu_crcox/Simulation/SOSLassoSimulations/data/s06.mat
+  - /home/nu_crcox/Simulation/SOSLassoSimulations/data/s07.mat
+  - /home/nu_crcox/Simulation/SOSLassoSimulations/data/s08.mat
+  - /home/nu_crcox/Simulation/SOSLassoSimulations/data/s09.mat
+  - /home/nu_crcox/Simulation/SOSLassoSimulations/data/s10.mat
+data_var: X
+metadata: /home/nu_crcox/Simulation/SOSLassoSimulations/data/metadata.mat
+metadata_var: metadata
+
+# Metadata Field References
+# =========================
+cvscheme: 1
+cvholdout: [1,2,3,4,5,6]
+finalholdout: 0
+
+# Targets
+# -------
+target_label: 'AB'
+target_type: 'category'
+
+# Coordinates
+# -----------
+orientation:
+  - 'local'
+  - 'permuted'
+  - 'interleaved'
+  - 'blocked interleaved'
+  - 'blocked permuted'
+
+# Filters
+# -------
+filters:
+  - not_padding
+
+# WholeBrain_MVPA Options
+# =======================
+SmallFootprint: 0
+SaveResultsAs: mat
+subject_id_fmt: s%02d.mat
+executable: /home/nu_crcox/src/WholeBrain_MVPA/bin/r2015b/WholeBrain_MVPA
+wrapper: /home/nu_crcox/src/WholeBrain_MVPA/run_WholeBrain_MVPA.sh
+
+# condortools/setupJob Options
+# ============================
+EXPAND:
+  - data
+  - orientation
+
+COPY:
+  - data
+  - metadata
+  - wrapper
+  - executable
