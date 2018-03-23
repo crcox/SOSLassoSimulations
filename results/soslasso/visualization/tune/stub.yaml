@@ -65,18 +65,18 @@ normalize_target: none
 #
 # metadata_var is the same as data_var.
 data:
-  - C:\Users\mbmhscc4\GitHub\SOSLassoSimulations\data\s01.mat
-  - C:\Users\mbmhscc4\GitHub\SOSLassoSimulations\data\s02.mat
-  - C:\Users\mbmhscc4\GitHub\SOSLassoSimulations\data\s03.mat
-  - C:\Users\mbmhscc4\GitHub\SOSLassoSimulations\data\s04.mat
-  - C:\Users\mbmhscc4\GitHub\SOSLassoSimulations\data\s05.mat
-  - C:\Users\mbmhscc4\GitHub\SOSLassoSimulations\data\s06.mat
-  - C:\Users\mbmhscc4\GitHub\SOSLassoSimulations\data\s07.mat
-  - C:\Users\mbmhscc4\GitHub\SOSLassoSimulations\data\s08.mat
-  - C:\Users\mbmhscc4\GitHub\SOSLassoSimulations\data\s09.mat
-  - C:\Users\mbmhscc4\GitHub\SOSLassoSimulations\data\s10.mat
+  - /Users/Chris/src/SOSLassoSimulations/data/s01.mat
+  - /Users/Chris/src/SOSLassoSimulations/data/s02.mat
+  - /Users/Chris/src/SOSLassoSimulations/data/s03.mat
+  - /Users/Chris/src/SOSLassoSimulations/data/s04.mat
+  - /Users/Chris/src/SOSLassoSimulations/data/s05.mat
+  - /Users/Chris/src/SOSLassoSimulations/data/s06.mat
+  - /Users/Chris/src/SOSLassoSimulations/data/s07.mat
+  - /Users/Chris/src/SOSLassoSimulations/data/s08.mat
+  - /Users/Chris/src/SOSLassoSimulations/data/s09.mat
+  - /Users/Chris/src/SOSLassoSimulations/data/s10.mat
 data_var: X
-metadata: C:\Users\mbmhscc4\GitHub\SOSLassoSimulations\data\metadata.mat
+metadata: /Users/Chris/src/SOSLassoSimulations/data/metadata.mat
 metadata_var: metadata
 
 # Metadata Field References
@@ -160,8 +160,8 @@ filters:
 SmallFootprint: 0
 SaveResultsAs: mat
 subject_id_fmt: s%02d.mat
-executable: C:/Users/mbmhscc4/MATLAB/src/WholeBrain_MVPA/bin/r2014b/WholeBrain_MVPA
-wrapper: C:/Users/mbmhscc4/MATLAB/src/WholeBrain_MVPA/run_WholeBrain_MVPA.sh
+executable: /Users/Chris/src/WholeBrain_MVPA/bin/r2014b/WholeBrain_MVPA
+wrapper: /Users/Chris/src/WholeBrain_MVPA/run_WholeBrain_MVPA.sh
 
 # condortools/setupJob Options
 # ============================

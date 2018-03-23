@@ -1,12 +1,9 @@
-# LASSO
-# =====
-regularization: lasso
-bias: 0
-lamSOS: 0
-lamL1: {args: [0, 0.14], distribution: uniform}
-HYPERBAND: {aggressiveness: 3, budget: 100, hyperparameters: [lamL1]}
+# SEACHLIGHT
+# ==========
+classifier: 'gnb_searchmight'
 normalize_data: zscore
-normalize_target: none
+radius: [1,3,7,14,28]
+shape: 'cube'
 
 # Data and Metadata Paths
 # =======================
@@ -28,7 +25,6 @@ metadata_var: metadata
 # Metadata Field References
 # =========================
 cvscheme: 1
-cvholdout: [1,2,3,4,5,6]
 finalholdout: 0
 
 # Targets
@@ -47,21 +43,20 @@ orientation:
 
 # Filters
 # -------
-filters:
-  - not_padding
+filters: []
 
 # WholeBrain_MVPA Options
 # =======================
 SmallFootprint: 0
 SaveResultsAs: mat
 subject_id_fmt: s%02d.mat
-executable: C:/Users/mbmhscc4/MATLAB/src/WholeBrain_MVPA/bin/r2014b/WholeBrain_MVPA
+executable: C:/Users/mbmhscc4/MATLAB/src/WholeBrain_MVPA/bin/r2015b/Searchlight_MVPA
 wrapper: C:/Users/mbmhscc4/MATLAB/src/WholeBrain_MVPA/run_WholeBrain_MVPA.sh
 
 # condortools/setupJob Options
 # ============================
 EXPAND:
-  - data
+  - radius
   - orientation
 
 COPY:
