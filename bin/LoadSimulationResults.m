@@ -1,12 +1,12 @@
-function R = LoadSimulationResults( path , varargin)
+function R = LoadSimulationResults( ResultsDir , varargin)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
     p = inputParser();
-    addRequired(p, 'path', @(x) ischar(x) || (iscellstr(x) && numel(x)==1));
+    addRequired(p, 'ResultsDir', @(x) ischar(x) || (iscellstr(x) && numel(x)==1));
     addParameter(p, 'AsTable', false, @(x) islogical(x) || any(x==[0,1]));
-    parse(p, path, varargin{:});
+    parse(p, ResultsDir, varargin{:});
 
-    [P,R,nperjob] = HTCondorLoad(p.Results.path);
+    [P,R,nperjob] = HTCondorLoad(p.Results.ResultsDir);
     cur = 0;
     for i = 1:numel(nperjob)
         a = cur + 1;
