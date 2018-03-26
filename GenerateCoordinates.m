@@ -1,8 +1,14 @@
-function [coords, data, filters] = GenerateCoordinates(d, SortIndex)
+function [coords, data, filters] = GenerateCoordinates(d, SortIndex, varargin)
 % GENERATECOORDINATES Compose coordinates based on 
 %
 %
 
+    p = inputParser();
+    addRequired(p, 'd');
+    addRequired(p, 'SortIndex');
+    addParameter(p, 'NoiseStrength', 1.0, @isscalar);
+    parse(p, d, SortIndex, varargin{:});
+    
     % Sorting is important because it will govern the order of columns in
     % data.X matrices. Note that the ordering is by the padded_unit_id!
 	d = sortrows(d, {
@@ -55,8 +61,9 @@ function [coords, data, filters] = GenerateCoordinates(d, SortIndex)
     data = struct( ...
         'subject',num2cell(1:10), ...
         'X', []);
+    d = DistortSignal(d, p.Results.NoiseStrength);
     for i = 1:numel(subjects)
-        z = d.subject == subjects{j};
+        z = d.subject == subjects{i};
         data(i).X = reshape(d.distorted_activation(z), ...
             N.units, ...
             N.examples)';
