@@ -5,3 +5,6 @@ results/ridge/visualization/tune/HB_0/
 results/soslasso/visualization/tune/HB_0/
 results/soslasso/visualization/tune_debug/.njobs
 results/soslasso/visualization/tune_debug/
+data/
+raw/
+results/
