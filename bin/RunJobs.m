@@ -24,9 +24,10 @@ function RunJobs( varargin )
 %  By default, RunJobs will skip directories that already have a
 %  'results.mat' file. To regenerate all results for jobs in the joblist,
 %  use the key-value pair 'overwrite', true.
+    r = pwd();
     p = inputParser();
     addOptional(p,'joblist',[],@(x) isnumeric(x) && all(x>0));
-    addOptional(p,'basedir',pwd(),@ischar);
+    addOptional(p,'basedir',r,@ischar);
     addParameter(p,'overwrite',false,@islogical);
     parse(p, varargin{:});
     
