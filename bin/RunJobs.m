@@ -45,7 +45,7 @@ function RunJobs( varargin )
         joblist_str = HTCondorListJobDirs(basedir);
         joblist_abspath = fullfile(basedir, joblist_str);
     else
-        n = count_digits_int(max(joblist)-1);
+        n = count_digits_int(max(p.Results.joblist)-1);
         fmt = sprintf('%%0%dd',n);
         joblist_str = arrayfun(@(i) sprintf(fmt, i), p.Results.joblist - 1, 'UniformOutput', false);
         joblist_abspath = fullfile(basedir,joblist_str);
