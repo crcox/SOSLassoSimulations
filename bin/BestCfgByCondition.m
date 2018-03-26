@@ -35,17 +35,30 @@ function [ Tbest, Tavg ] = BestCfgByCondition( tune_dir, hyperparams, objective,
     addParameter(p, 'minimize', true, @(x) islogical(x) || any(x==[0,1]));
     parse(p, tune_dir, hyperparams, objective, varargin{:});
     
+    if ~exist('splitapply','builtin')
+        splitapply = @splitapply_crc;
+    end
+    
     T = LoadSimulationResults( tune_dir, 'AsTable', true );
-    G = findgroups(T(:,[hyperparams,p.Results.by]));
-    Tavg = unique(T(:,[hyperparams,p.Results.by]));
+    try
+        G = findgroups(T(:,[hyperparams,p.Results.by]));
+        Tavg = unique(T(:,[hyperparams,p.Results.by]));
+    catch ME
+        [Tavg,~,G] = unique(T(:,[hyperparams,p.Results.by]));
+    end
     varsToAverage = [{objective},p.Results.extras];
     for i = 1:numel(varsToAverage)
         f = varsToAverage{i};
         Tavg.(f) = splitapply(@mean, T.(f), G);
     end
 
-    G = findgroups(Tavg(:,p.Results.by));
-    Tbest = unique(Tavg(:,p.Results.by));
+    try
+        G = findgroups(Tavg(:,p.Results.by));
+        Tbest = unique(Tavg(:,p.Results.by));
+    catch ME % older versions do not have find groups
+        [Tbest,~,G] = unique(Tavg(:,p.Results.by));
+    end
+    
     varsToReport = [{objective},p.Results.extras,hyperparams];
     if p.Results.minimize
         X = splitapply(@whichmin, Tavg{:,varsToReport}, G);
@@ -61,6 +74,11 @@ end
 function [X,I] = whichmin( x )
     [~,I] = min(x(:,1));
     X = x(I,:);
+end
+
+function x = splitapply_crc(func, tab, grp)
+    grp_id = unique(grp);
+    x = cell2mat(arrayfun(@(g) func(tab(grp==g,:)), grp_id, 'UniformOutput', 0));
 end
 
 function [X,I] = whichmax( x )
