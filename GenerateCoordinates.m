@@ -1,8 +1,6 @@
 function [coords, data, filters] = GenerateCoordinates(d, SortIndex, varargin)
 % GENERATECOORDINATES Compose coordinates based on 
 %
-%
-
     p = inputParser();
     addRequired(p, 'd');
     addRequired(p, 'SortIndex');
