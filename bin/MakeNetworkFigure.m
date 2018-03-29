@@ -1,8 +1,17 @@
-function [ ] = MakeNetworkFigure( UnitCodes )
+function [ ] = MakeNetworkFigure( UnitCodes , varargin)
+    p = inputParser();
+    addRequired(p, 'UnitCodes', @istable);
+    addParameter(p, 'Template', '../../../../template/ModelSchematic_ColorCoded.svg',@ischar);
+    parse(p, UnitCodes, varargin{:});
+    
+    if ~exist('splitapply','builtin')
+        splitapply = @splitapply_crc;
+    end
+    
     base_prob = 0.1;
     p_threshold = 0.01;
     GREYHEX = '#808080';
-    svgDOM = xmlread('C:\Users\mbmhscc4\GitHub\SOSLassoSimulations\template\ModelSchematic_ColorCoded.svg');
+    svgDOM = xmlread(p.Results.Template);
     nsubj = numel(categories(UnitCodes.subject));
     conditions = categories(UnitCodes.condition);
     variablesOfInterest = {'unit_category','unit_id_by_category','unit_contribution','padded_unit_id','condition'};
@@ -37,7 +46,7 @@ function [ ] = MakeNetworkFigure( UnitCodes )
 end
 
 function UnitCode = getUnitCode(uc)
-    UnitCode = sprintf('%s%s',uc.unit_category,uc.unit_id_by_category);
+    UnitCode = sprintf('%s%s',char(uc.unit_category),char(uc.unit_id_by_category));
 end
 
 function rgb = generate_rgb(UnitCodesByCond)
@@ -47,7 +56,7 @@ function rgb = generate_rgb(UnitCodesByCond)
     % Green will be zero if all positive or all negative.
     r = UnitCodesByCond.n_pos./UnitCodesByCond.n_nz;
     b = UnitCodesByCond.n_neg./UnitCodesByCond.n_nz;
-    g = r/b;
-    g(g>1) = b(g>1)/r(g>1);
+    g = r./b;
+    g(g>1) = b(g>1)./r(g>1);
     rgb = [r,g,b];
 end
