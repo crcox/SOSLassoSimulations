@@ -1,9 +1,7 @@
-function UnitCodes = UnwravelResults( ResultsDir )
+function UnitCodes = UnwravelResults( ResultsDir, AnnotatedData, ConditionIndex )
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
     results = LoadSimulationResults( ResultsDir );
-    load('C:/Users/mbmhscc4/GitHub/SOSLassoSimulations/data/AnnotatedData.mat');
-    load('C:/Users/mbmhscc4/GitHub/SOSLassoSimulations/data/ConditionIndex.mat');
     UCW = cell(numel(results), 1);
     for i = 1:numel(results);
         SortInfo = select_sort_info(ConditionIndex, results(i));
