@@ -1,22 +1,28 @@
-function [ output_args ] = UnivariateAnalysis( Annotated )
+function [ ModelTable, summary ] = UnivariateAnalysis( AnnotatedData, ConditionIndex )
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
-    m = fitlme(tbl,'activation~example_category+(1|subject)');
-
+    AnnotatedData = apply_conditional_sort(AnnotatedData, ConditionIndex);
+    AnnotatedData = DistortSignal(AnnotatedData, 1.0);
+    AnnotatedData.activation = smooth_activation_vector(AnnotatedData);
+    AnnotatedData = drop_rows_by_unit_category(AnnotatedData, 'padding');
+    [ModelTable, ~, g] = unique(AnnotatedData(:,{'unit_id','unit_category','unit_contribution'}));
+    ModelTable.lme = cell(size(ModelTable,1),1);
+    for i = unique(g)'
+        z = g == i;
+        ModelTable.lme{i} = fitlme(AnnotatedData(z,:),'distorted_activation~example_category+(1|subject)');
+    end
+    summary = summary_table(ModelTable);
+    disp(summary);
 end
 
-function y = gaussian_blur(x, neighbors)
-    k = gausswin((neighbors*2)+1,2.3549);
-    y = convolve(x,k,'same');
+function d = apply_conditional_sort(d,~)
+% TODO
 end
 
-function y = exponential_blur(x, neighbors)
-    k = 1./(2.^(1:neighbors));
-    k = [flip(k),1,k];
-    y = convolve(x,k,'same');
+function t = summary_table( ModelTable )
+    ModelTable.estimate = cellfun(@(x) x.Coefficients.Estimate(2), ModelTable.lme);
+    ModelTable.se = cellfun(@(x) x.Coefficients.SE(2), ModelTable.lme);
+    allvars = {'unit_category','unit_contribution','estimate','se'};
+    groupby = {'unit_category','unit_contribution'};
+    t = grpstats(ModelTable(:,allvars),groupby);
 end
-
-function y = boxcar_blur(x, neighbors)
-    k = ones(1,(neighbors*2)+1);
-    y = convolve(x,k,'same');
-end 
