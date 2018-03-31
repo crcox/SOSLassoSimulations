@@ -65,11 +65,11 @@ uc = categorical(uc, 0:3, {'neither','A','B','both'});
 % Reshape the activation matrix into a vector
 aa = reshape(tmp(:,3:end)',numel(i),1);
 % Subject ID
-ss = categorical(i(:));
+ss = ordinal(i(:));
 % Example ID
-ee = categorical(j(:));
+ee = ordinal(j(:));
 % Unit ID
-uu = categorical(k(:));
+uu = ordinal(k(:));
 % Assemble table from these pieces
 AnnotatedData = table(ss,ct,ee,gr,uu,gu,uc,aa, ...
     'VariableNames',{
