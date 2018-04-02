@@ -21,7 +21,7 @@ function [ ] = MakeNetworkFigure( UnitCodes, varargin)
         UnitCodesByCond.rgb = generate_rgb_searchlight(UnitCodesByCond);
     elseif isUnivariate
         UnitCodesByCond = UnitCodes;
-        %[~,~,~,UnitCodesByCond.pval] = fdr_bh(UnitCodes.pval);
+        [~,~,~,UnitCodesByCond.pval] = fdr_bh(UnitCodes.pval);
         UnitCodesByCond.rgb = generate_rgb_univariate(UnitCodesByCond);        
     else
         nsubj = numel(categories(UnitCodes.subject));
