@@ -7,14 +7,14 @@ function [ ModelTable, summary ] = UnivariateAnalysis( AnnotatedData, ConditionI
     MM = cell(numel(conditions), 1);
     for j = 1:numel(conditions)
         D = apply_conditional_sort(AnnotatedData, ConditionIndex, conditions{j});
-        D.activation = smooth_activation_vector(D);
+        D.activation = smooth_activation_vector(D,'method','gaussian','neighbors',2);
         D = drop_rows_by_unit_category(D, 'padding');
-        [M, ~, g] = unique(D(:,{'unit_id','unit_category','unit_contribution'}));
+        [M, ~, g] = unique(D(:,{'unit_id','unit_category','unit_contribution','unit_id_by_category'}));
         M.lme = cell(size(M,1),1);
         M.condition = repmat(conditions(j),size(M,1),1);
         for i = unique(g)'
             z = g == i;
-            M.lme{i} = fitlme(AnnotatedData(z,{'distorted_activation','example_category_code','subject'}),'distorted_activation~example_category_code+(1|subject)');
+            M.lme{i} = fitlme(D(z,{'distorted_activation','example_category_code','subject'}),'distorted_activation~example_category_code+(1|subject)');
         end
         MM{j} = M;
     end
