@@ -6,13 +6,14 @@ function x = smooth_activation_vector(d, varargin)
     parse(p, d, varargin{:});
     splitapply_local = defineIfNotBuiltin('splitapply',@splitapply_crc);
     [~,~,g] = unique(d(:,{'subject','example_id'}));
+    k = p.Results.neighbors;
     switch lower(p.Results.method)
         case 'exponential'
-            blurfunc = @(x) {exponential_blur(x,1)};
+            blurfunc = @(x) {exponential_blur(x,k)};
         case 'gaussian'
-            blurfunc = @(x) {gaussian_blur(x,1)};
+            blurfunc = @(x) {gaussian_blur(x,k)};
         case 'boxcar'
-            blurfunc = @(x) {boxcar_blur(x,1)};
+            blurfunc = @(x) {boxcar_blur(x,k)};
     end
     smooth_activation = splitapply_local(blurfunc,d.distorted_activation,g);
     x = cell2mat(smooth_activation);
