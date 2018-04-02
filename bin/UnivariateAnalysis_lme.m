@@ -5,9 +5,9 @@ function [ ModelTable, summary ] = UnivariateAnalysis_lme( AnnotatedData, Condit
     AnnotatedData = DistortSignal(AnnotatedData, 1.0);
     AnnotatedData.example_category_code = (AnnotatedData.example_category == 'B') + 0;
     MM = cell(numel(conditions), 1);
-    for j = 1:numel(conditions)
+    for j = 2:numel(conditions)
         D = apply_conditional_sort(AnnotatedData, ConditionIndex, conditions{j});
-        D.distorted_activation = smooth_activation_vector(D,'method','exponential','neighbors',2);
+        D.distorted_activation = smooth_activation_vector(D,'method','gaussian','neighbors',2);
         D = drop_rows_by_unit_category(D, 'padding');
         [M, ~, g] = unique(D(:,{'unit_id','unit_category','unit_contribution','unit_id_by_category'}));
         M.lme = cell(size(M,1),1);
@@ -26,13 +26,15 @@ function [ ModelTable, summary ] = UnivariateAnalysis_lme( AnnotatedData, Condit
     disp(summary);
 end
 
-function d = apply_conditional_sort(d,ci,cond)
+function [d] = apply_conditional_sort(d,ci,cond)
     z = ci.condition == cond;
     ci = ci(z,{'subject','unit_id','index'});
     d = outerjoin(d,ci,'Keys',{'subject','unit_id'},'MergeKeys',true);
     z = isnan(d.index);
     d.index(z) = d.padded_unit_id(z);
-    d = sortrows(d,{'subject','example_id','padded_blocks','index'});
+    d = sortrows(d,{'subject','example_id','padded_blocks'});
+    [~,ix] = sortrows(d,{'subject','example_id','padded_blocks','index'});
+    d.distorted_activation = d.distorted_activation(ix);
 end
 
 function t = summary_table( ModelTable )
