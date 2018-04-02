@@ -14,6 +14,6 @@ function x = smooth_activation_vector(d, varargin)
         case 'boxcar'
             blurfunc = @(x) {boxcar_blur(x,1)};
     end
-    smooth_activation = splitapply_local(blurfunc,d.activation,g);
+    smooth_activation = splitapply_local(blurfunc,d.distorted_activation,g);
     x = cell2mat(smooth_activation);
 end
