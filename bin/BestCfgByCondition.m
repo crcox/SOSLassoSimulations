@@ -35,9 +35,7 @@ function [ Tbest, Tavg ] = BestCfgByCondition( tune_dir, hyperparams, objective,
     addParameter(p, 'minimize', true, @(x) islogical(x) || any(x==[0,1]));
     parse(p, tune_dir, hyperparams, objective, varargin{:});
     
-    if ~exist('splitapply','builtin')
-        splitapply = @splitapply_crc;
-    end
+    splitapply_local = defineIfNotBuiltin('splitapply', @splitapply_crc);
     
     T = LoadSimulationResults( tune_dir, 'AsTable', true );
     try
@@ -49,7 +47,7 @@ function [ Tbest, Tavg ] = BestCfgByCondition( tune_dir, hyperparams, objective,
     varsToAverage = [{objective},p.Results.extras];
     for i = 1:numel(varsToAverage)
         f = varsToAverage{i};
-        Tavg.(f) = splitapply(@mean, T.(f), G);
+        Tavg.(f) = splitapply_local(@mean, T.(f), G);
     end
 
     try
@@ -61,9 +59,9 @@ function [ Tbest, Tavg ] = BestCfgByCondition( tune_dir, hyperparams, objective,
     
     varsToReport = [{objective},p.Results.extras,hyperparams];
     if p.Results.minimize
-        X = splitapply(@whichmin, Tavg{:,varsToReport}, G);
+        X = splitapply_local(@whichmin, Tavg{:,varsToReport}, G);
     else
-        X = splitapply(@whichmax, Tavg{:,varsToReport}, G);
+        X = splitapply_local(@whichmax, Tavg{:,varsToReport}, G);
     end
     for i = 1:numel(varsToReport)
         f = varsToReport{i};
