@@ -3,7 +3,7 @@ function R = LoadSimulationResults( ResultsDir , varargin)
 %   Detailed explanation goes here
     p = inputParser();
     addRequired(p, 'ResultsDir', @(x) ischar(x) || (iscellstr(x) && numel(x)==1));
-    addParameter(p, 'type', 'wholebrain_mvpa', @ischar);
+    addOptional(p, 'type', 'wholebrain_mvpa', @ischar);
     addParameter(p, 'AsTable', false, @(x) islogical(x) || any(x==[0,1]));
     parse(p, ResultsDir, varargin{:});
 

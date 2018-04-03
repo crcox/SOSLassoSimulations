@@ -5,7 +5,7 @@ function [ ModelTable, summary ] = UnivariateAnalysis_lme( AnnotatedData, Condit
     AnnotatedData = DistortSignal(AnnotatedData, 1.0);
     AnnotatedData.example_category_code = (AnnotatedData.example_category == 'B') + 0;
     MM = cell(numel(conditions), 1);
-    for j = 2:numel(conditions)
+    for j = 1:numel(conditions)
         D = apply_conditional_sort(AnnotatedData, ConditionIndex, conditions{j});
         D.distorted_activation = smooth_activation_vector(D,'method','gaussian','neighbors',2);
         D = drop_rows_by_unit_category(D, 'padding');
