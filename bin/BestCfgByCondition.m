@@ -1,4 +1,4 @@
-function [ Tbest, Tavg ] = BestCfgByCondition( tune_dir, hyperparams, objective, varargin)
+function [ Tbest, Tavg ] = BestCfgByCondition( tune_dir, analysis, hyperparams, objective, varargin)
 %BESTCFGBYCONDITION Reports a table of configurations based on parameter
 %search.
 %   Inputs:
@@ -28,16 +28,19 @@ function [ Tbest, Tavg ] = BestCfgByCondition( tune_dir, hyperparams, objective,
 %
     p = inputParser();
     addRequired(p, 'tune_dir', @ischar);
+    addRequired(p, 'analysis', @ischar);
     addRequired(p, 'hyperparams', @iscellstr);
     addRequired(p, 'objective', @ischar);
     addOptional(p, 'extras', {}, @iscellstr);
     addOptional(p, 'by', {}, @iscellstr);
     addParameter(p, 'minimize', true, @(x) islogical(x) || any(x==[0,1]));
-    parse(p, tune_dir, hyperparams, objective, varargin{:});
+    parse(p, tune_dir, analysis, hyperparams, objective, varargin{:});
     
     splitapply_local = defineIfNotBuiltin('splitapply', @splitapply_crc);
     
-    T = LoadSimulationResults( tune_dir, 'AsTable', true );
+    T = LoadSimulationResults( tune_dir, analysis, 'AsTable', true );
+%     T = handle_empty_rows(T,hyperparams,p.Results.by);      
+    
     try
         G = findgroups(T(:,[hyperparams,p.Results.by]));
         Tavg = unique(T(:,[hyperparams,p.Results.by]));
@@ -78,3 +81,22 @@ function [X,I] = whichmax( x )
     [~,I] = max(x(:,1));
     X = x(I,:);
 end
+
+% function T = handle_empty_rows(T,hyperparams,by)
+%     z = cellfun(@isempty, T.(hyperparams{1}));
+%     if any(z)
+%         T(z,:) = [];
+%         f = [hyperparams,by];
+%         for i = 1:numel(f)
+%             x = T.(f{i})(1);
+%             if iscell(x) && isnumeric(x{1}) && isscalar(x{1})
+%                 try
+%                     T.(f{i}) = cell2mat(T.(f{i}));
+%                 catch ME
+%                     disp('Expected a scalar, but did not receive one.');
+%                     rethrow(ME);
+%                 end
+%             end
+%         end
+%     end
+% end

@@ -15,6 +15,8 @@ function [UnitCodes,summary] = PairResultsWithUnitCodes( Results, AnnotatedData,
         if isfield(Results,'radius')
             UnitCodes.radius = repmat(Results(i).radius, size(UnitCodes,1),1);
         end
+        z = ismember(UnitCodes.unit_category, {'SO','AO'});
+        UnitCodes(z,:) = [];
         UnitCodes.(p.Results.NewVariableName) = forcecolvec(Results(i).(p.Results.VariableToPair));
         if strcmp(Results(i).AnalysisType,'searchlight')
             z = UnitCodes.unit_category == 'padding';

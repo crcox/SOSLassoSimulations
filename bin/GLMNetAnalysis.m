@@ -3,7 +3,7 @@ function [ ModelTable, WeightTable, summary ] = GLMNetAnalysis( AnnotatedData, m
 % efficient than WholeBrain MVPA but implements a simpler optimization.
     cvind = metadata(1).cvind;
     AnnotatedData = DistortSignal(AnnotatedData, 1.0);
-    AnnotatedData = drop_rows_by_unit_category(AnnotatedData, {'padding','SO','AO'});
+    AnnotatedData = drop_rows_by_unit_category(AnnotatedData, {'padding'});
     [ModelTable, ~, g] = unique(AnnotatedData(:,{'subject'}));
     WeightTable = unique(AnnotatedData(:,{'subject','unit_id','unit_category','unit_contribution'}));
     WeightTable.weights = zeros(size(WeightTable, 1), 1);
