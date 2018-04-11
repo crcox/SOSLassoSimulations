@@ -10,3 +10,4 @@ X.block = ordinal( ...
     1:4);
 X.block_id = [1:7,1:7,1:7,1:21]';
 disp(X);
+writetable(X,'SplitPermuted_BalancedBetweenBlocks.csv');

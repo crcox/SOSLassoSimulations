@@ -10,3 +10,4 @@ X.block = ordinal( ...
      1:4);
 X.block_id = [1:7,1:9,1:7,1:6,1:7,1:6]';
 disp(X);
+writetable(X,'BlockedPermuted_BalancedWithinBlocks.csv');
