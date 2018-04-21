@@ -11,7 +11,6 @@ function [coords, data, filters] = GenerateCoordinates(d, SortIndex, varargin)
     % data.X matrices. Note that the ordering is by the padded_unit_id!
 	d = sortrows(d, {
         'subject'
-        'example_category'
         'example_id'
         'padded_unit_id'
         });

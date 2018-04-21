@@ -51,4 +51,9 @@ function SortIndex = GenerateConditionIndex(d)
     ix = generateBlockedPermuted(N);
     SortIndex.index(z) = ix(:);
     
+    %% Blocked Permuted Balanced
+    z = SortIndex.condition == 'blocked permuted balanced';
+    ix = generateBlockedPermuted(N);
+    SortIndex.index(z) = ix(:);
+    
 end
