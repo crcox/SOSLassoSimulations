@@ -55,10 +55,22 @@ function [ UnitCodesByCond ] = ApplyStatisticalTests( UnitCodesByCond, varargin 
 end
 
 function m = merge_baseprobability(uc,bp)
-    if isempty(bp)
-        m = uc;
-    else
-        m = join(uc,bp);
+    m = uc;
+    if ~isempty(bp)
+        m.baseprob = nan(size(m,1),1);
+        if isfield(bp,'median')
+            m.median = m.baseprob;
+        end
+        [ucu,~,ib] = unique(uc(:,{'subject','condition'}));
+        assert(size(ucu,1)==size(bp,1));
+        for i = 1:size(ucu,1)
+            z = ib == i;
+            m.baseprob(z) = bp.baseprob(i,:)';
+            if isfield(bp,'median')
+                m.median(z) = bp.median(i,:)';
+            end
+            
+        end
     end
 end
 

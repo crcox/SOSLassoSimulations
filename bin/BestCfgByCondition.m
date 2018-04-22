@@ -62,23 +62,26 @@ function [ Tbest, Tavg ] = BestCfgByCondition( tune_dir, analysis, hyperparams, 
     
     varsToReport = [{objective},p.Results.extras,hyperparams];
     if p.Results.minimize
-        X = splitapply_local(@whichmin, Tavg{:,varsToReport}, G);
+        whichmin_obj = @(x) whichmin(objective, x);
+        X = splitapply_local(whichmin_obj, Tavg(:,varsToReport), G);
     else
-        X = splitapply_local(@whichmax, Tavg{:,varsToReport}, G);
+        whichmax_obj = @(x) whichmax(objective, x);
+        X = splitapply_local(whichmax_obj, Tavg{:,varsToReport}, G);
     end
-    for i = 1:numel(varsToReport)
-        f = varsToReport{i};
-        Tbest.(f) = X(:,i);
-    end
+    Tbest = cat(1, X{:});
+%     for i = 1:numel(varsToReport)
+%         f = varsToReport{i};
+%         Tbest.(f) = X(:,i);
+%     end
 end
 
-function [X,I] = whichmin( x )
-    [~,I] = min(x(:,1));
+function [X,I] = whichmin( objective, x )
+    [~,I] = min(x.(objective));
     X = x(I,:);
 end
 
-function [X,I] = whichmax( x )
-    [~,I] = max(x(:,1));
+function [X,I] = whichmax( objective, x )
+    [~,I] = max(x.(objective));
     X = x(I,:);
 end
 

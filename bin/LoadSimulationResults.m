@@ -27,8 +27,13 @@ function R = LoadSimulationResults( ResultsDir , varargin)
         cur = b;
         [R(a:b).condition] = deal(P(i).orientation);
         if isfield(P,'regularization') && strcmp(P(i).regularization,'soslasso')
-            [R(a:b).diameter] = deal(P(i).diameter);
-            [R(a:b).overlap] = deal(P(i).overlap);
+            if isfield(P,'sosgroups') && ~isempty(P(i).sosgroups)
+                [R(a:b).sosgroups] = deal(P(i).sosgroups);
+            elseif isfield(P,'diameter') && ~isempty(P(i).diameter)
+                [R(a:b).diameter] = deal(P(i).diameter);
+                [R(a:b).overlap] = deal(P(i).overlap);
+                [R(a:b).shape] = deal(P(i).shape);
+            end
         end
     end
     if p.Results.AsTable
