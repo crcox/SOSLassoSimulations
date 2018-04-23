@@ -15,11 +15,17 @@ function [ x ] = TruePosFalsePos( UnitCodesByCond, varargin )
     x = ismember(UnitCodesByCond.unit_category,{'SI','AI','SO','AO'})*1;
     y = ismember(UnitCodesByCond.unit_category,{'SH','AH','noise'})*2;
     UnitCodesByCond.layer = categorical(x+y, 1:2, {'input/output','hidden'});
-    [x,~,g] = unique(UnitCodesByCond(:, {'condition','layer'}));
-    f = @(x) tpfp(x.layer,x.unit_category,x.pval,p.Results.PThreshold);
-%     f = @(layer,unit_category,pval) tpfp(layer,unit_category,pval,p.Results.PThreshold);
+    [x,~,g] = unique(UnitCodesByCond(:, {'condition','layer','radius'}));
+    % For custom split apply
+%     f = @(x) tpfp(x.layer,x.unit_category,x.pval,p.Results.PThreshold);
+    % For builtin split apply
+    f = @(layer,unit_category,pval) tpfp(layer,unit_category,pval,p.Results.PThreshold);
     tmp = splitapply_local(f, UnitCodesByCond(:,{'layer','unit_category','pval'}), g);
-    tmp = cell2mat(cat(1,tmp{:}));
+    try % with builtin split apply
+        tmp = cell2mat(tmp);
+    catch % with custom split apply
+        tmp = cell2mat(cat(1,tmp{:}));
+    end
     x.tp = tmp(:,1);
     x.fp = tmp(:,2);
     x.np = tmp(:,3);

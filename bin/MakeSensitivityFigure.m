@@ -1,6 +1,6 @@
 function [] = MakeSensitivityFigure(TPFP)
     TPFP.d = (TPFP.tp ./ TPFP.np) - (TPFP.fp ./ TPFP.nn);
-    z = ismember(TPFP.condition, {'blocked permuted', 'local'});
+    z = ismember(TPFP.condition, {'blocked permuted balanced', 'local'});
     TPFP = TPFP(z,{'condition','layer','d'});
     bar(reshape(TPFP.d,2,2));
     a = gca();
