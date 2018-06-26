@@ -1,4 +1,4 @@
-function [ Tbest, Tavg ] = BestCfgByCondition( tune_dir, analysis, hyperparams, objective, varargin)
+function [ Tbest, Tavg ] = BestCfgByCondition( tune_table, hyperparams, objective, varargin)
 %BESTCFGBYCONDITION Reports a table of configurations based on parameter
 %search.
 %   Inputs:
@@ -27,18 +27,15 @@ function [ Tbest, Tavg ] = BestCfgByCondition( tune_dir, analysis, hyperparams, 
 %                maximized.
 %
     p = inputParser();
-    addRequired(p, 'tune_dir', @ischar);
-    addRequired(p, 'analysis', @ischar);
+    addRequired(p, 'tune_table', @istable);
     addRequired(p, 'hyperparams', @iscellstr);
     addRequired(p, 'objective', @ischar);
     addOptional(p, 'extras', {}, @iscellstr);
     addOptional(p, 'by', {}, @iscellstr);
     addParameter(p, 'minimize', true, @(x) islogical(x) || any(x==[0,1]));
-    parse(p, tune_dir, analysis, hyperparams, objective, varargin{:});
+    parse(p, tune_table, hyperparams, objective, varargin{:});
     
-    splitapply_local = defineIfNotBuiltin('splitapply', @splitapply_crc);
-    
-    T = LoadSimulationResults( tune_dir, analysis, 'AsTable', true );
+    T = p.Results.tune_table;
 %     T = handle_empty_rows(T,hyperparams,p.Results.by);      
     
     try
@@ -50,7 +47,7 @@ function [ Tbest, Tavg ] = BestCfgByCondition( tune_dir, analysis, hyperparams, 
     varsToAverage = [{objective},p.Results.extras];
     for i = 1:numel(varsToAverage)
         f = varsToAverage{i};
-        Tavg.(f) = splitapply_local(@mean, T.(f), G);
+        Tavg.(f) = splitapply(@mean, T.(f), G);
     end
 
     try
@@ -62,21 +59,22 @@ function [ Tbest, Tavg ] = BestCfgByCondition( tune_dir, analysis, hyperparams, 
     
     varsToReport = [{objective},p.Results.extras,hyperparams];
     if p.Results.minimize
-        whichmin_obj = @(x) whichmin(objective, x);
-        X = splitapply_local(whichmin_obj, Tavg(:,varsToReport), G);
+        whichmin_obj = @(x) whichmin(x);
+        X = splitapply(whichmin_obj, Tavg{:,varsToReport}, G);
     else
         whichmax_obj = @(x) whichmax(objective, x);
-        X = splitapply_local(whichmax_obj, Tavg{:,varsToReport}, G);
+        X = splitapply(whichmax_obj, Tavg(:,varsToReport), G);
     end
-    Tbest = cat(1, X{:});
-%     for i = 1:numel(varsToReport)
-%         f = varsToReport{i};
-%         Tbest.(f) = X(:,i);
-%     end
+%     Tbest = array2table(X,'VariableNames',varsToReport);
+%     Tbest = cat(1, X{:});
+    for i = 1:numel(varsToReport)
+        f = varsToReport{i};
+        Tbest.(f) = X(:,i);
+    end
 end
 
-function [X,I] = whichmin( objective, x )
-    [~,I] = min(x.(objective));
+function [X,I] = whichmin( x )
+    [~,I] = min(x(:,1));
     X = x(I,:);
 end
 
