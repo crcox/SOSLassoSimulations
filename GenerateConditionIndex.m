@@ -1,9 +1,9 @@
 function SortIndex = GenerateConditionIndex(d)
 %% Setup
-	subjects = categories(d.subject);
-    example_id = categories(d.example_id);
-    z = d.subject == subjects{1} & ...
-        d.example_id == example_id{1} & ...
+	subjects = unique(d.subject);
+    example_id = unique(d.example_id);
+    z = d.subject == subjects(1) & ...
+        d.example_id == example_id(1) & ...
         ismember(d.unit_category, {'SH','AH','noise'});
 	N = cell2struct( ...
         num2cell(countcats(d.unit_category(z))), ...
@@ -11,7 +11,7 @@ function SortIndex = GenerateConditionIndex(d)
     N.subjects = numel(subjects);
     
     % There are 5 conditions, so replicate selction 5 times.
-    z = d.example_id == example_id{1} & ...
+    z = d.example_id == example_id(1) & ...
         ismember(d.unit_category, {'SH','AH','noise'});
     SortIndex = repmat(d(z,{
         'subject'
@@ -19,11 +19,11 @@ function SortIndex = GenerateConditionIndex(d)
         'unit_id'
         'unit_id_by_category'
         'unit_contribution'
-        }), 5, 1);
+        }), 6, 1);
     SortIndex.condition = categorical( ...
-        reshape(repmat(1:5,nnz(z),1), nnz(z)*5, 1), ...
-        1:5, ...
-        {'local','permuted','interleaved','blocked interleaved','blocked permuted'});
+        reshape(repmat(1:6,nnz(z),1), nnz(z)*6, 1), ...
+        1:6, ...
+        {'local','permuted','interleaved','blocked interleaved','blocked permuted (balanced within)','blocked permuted (balanced between)'});
     SortIndex.index = nan(size(SortIndex,1),1);
     
     %% Local
@@ -47,13 +47,13 @@ function SortIndex = GenerateConditionIndex(d)
     SortIndex.index(z) = ix(:);
     
     %% Blocked Permuted
-    z = SortIndex.condition == 'blocked permuted';
-    ix = generateBlockedPermuted(N);
+    z = SortIndex.condition == 'blocked permuted (balanced within)';
+    ix = generateBlockedPermuted(N, 'balance', 'within');
     SortIndex.index(z) = ix(:);
     
     %% Blocked Permuted Balanced
-    z = SortIndex.condition == 'blocked permuted balanced';
-    ix = generateBlockedPermuted(N);
+    z = SortIndex.condition == 'blocked permuted (balanced between)';
+    ix = generateBlockedPermuted(N, 'balance', 'between');
     SortIndex.index(z) = ix(:);
     
 end

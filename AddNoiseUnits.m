@@ -1,18 +1,18 @@
 function D = AddNoiseUnits(d,n)
-    subjects = categories(d.subject);
-    examples = categories(d.example_id);
+    subjects = unique(d.subject);
+    examples = unique(d.example_id);
     
-    [k,j,i] = ndgrid(1:n,str2double(examples),str2double(subjects));  
-    subject = categorical(i(:));
-    example_id = categorical(j(:));
+    [k,j,i] = ndgrid(1:n,examples,subjects);  
+    subject = i(:);
+    example_id = j(:);
     example_category = categorical(j(:) > 36, [0,1], {'A','B'});
     unit_category = categorical( ...
         ones(numel(k),1) * 7, ...
         1:8, ...
         {'SI','AI','SH','AH','SO','AO','noise','padding'}, ...
         'Ordinal',true);
-    unit_id_by_category = categorical(k(:));
-    unit_id = categorical(k(:) + max(str2double(categories(d.unit_id))));
+    unit_id_by_category = k(:);
+    unit_id = k(:) + max(unique(d.unit_id));
     unit_contribution = categorical(ones(numel(k),1),1,{'neither'});
     activation = zeros(numel(k), 1);
     

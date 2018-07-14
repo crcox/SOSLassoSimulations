@@ -14,11 +14,11 @@ function [coords, data, filters] = GenerateCoordinates(d, SortIndex, varargin)
         'example_id'
         'padded_unit_id'
         });
-    subjects = categories(d.subject);
-    example_id = categories(d.example_id);
+    subjects = unique(d.subject);
+    example_id = unique(d.example_id);
     unit_categories = categories(d.unit_category);
-    z = d.subject == subjects{1} & ...
-        d.example_id == example_id{1};
+    z = d.subject == subjects(1) & ...
+        d.example_id == example_id(1);
 	N = cell2struct( ...
         num2cell(countcats(d.unit_category(z))), ...
         categories(d.unit_category));
@@ -39,8 +39,8 @@ function [coords, data, filters] = GenerateCoordinates(d, SortIndex, varargin)
     
     for i = 1:numel(conditions)
         for j = 1:numel(subjects)
-            z = SortIndex.subject == subjects{j} & ...
-                SortIndex.condition == conditions{i};
+            z = SortIndex.subject == subjects(j) & ...
+                SortIndex.condition == conditions(i);
             S = SortIndex(z,:);
             UC = unit_categories(countcats(S.unit_category)>0);
             z = ismember(D.unit_category, UC);
@@ -60,7 +60,7 @@ function [coords, data, filters] = GenerateCoordinates(d, SortIndex, varargin)
         'X', []);
     d = DistortSignal(d, p.Results.NoiseStrength);
     for i = 1:numel(subjects)
-        z = d.subject == subjects{i};
+        z = d.subject == subjects(i);
         data(i).X = reshape(d.distorted_activation(z), ...
             N.units, ...
             N.examples)';
@@ -71,7 +71,7 @@ function [coords, data, filters] = GenerateCoordinates(d, SortIndex, varargin)
         'dimension', 2, ...
         'filter', []);
     for i = 1:numel(subjects)
-        z = d.subject == subjects{i} & d.example_id == example_id{1};
+        z = d.subject == subjects(i) & d.example_id == example_id(1);
         filters(i).filter = d.unit_category(z) ~= 'padding';
     end
 end

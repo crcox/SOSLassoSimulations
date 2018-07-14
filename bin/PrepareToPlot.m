@@ -10,9 +10,10 @@ function [ UnitCodesByCond ] = PrepareToPlot( UnitCodesByCond, varargin )
     parse(p, UnitCodesByCond, varargin{:});
     
     splitapply_local = defineIfNotBuiltin('splitapply', @splitapply_crc);
-    UnitCodes = merge_baseprobability(p.Results.UnitCodes,p.Results.BaseProbability);
+    
     switch p.Results.AnalysisType
         case 'ridge'
+            UnitCodes = merge_baseprobability(p.Results.UnitCodes,p.Results.BaseProbability);
             nsubj = numel(categories(UnitCodes.subject));
             variablesOfInterest = {'condition','subject'};
             [~,~,G] = unique(UnitCodes(:,variablesOfInterest));
@@ -28,11 +29,12 @@ function [ UnitCodesByCond ] = PrepareToPlot( UnitCodesByCond, varargin )
 %             UnitCodesByCond.rgb = generate_rgb_lasso(UnitCodesByCond);
 
         case 'univariate'
-            UnitCodesByCond = UnitCodes;
+%             UnitCodesByCond = UnitCodes;
             [~,~,~,UnitCodesByCond.pval] = fdr_bh(UnitCodes.pval);
 %             UnitCodesByCond.rgb = generate_rgb_univariate(UnitCodesByCond);
             
         case 'searchlight'
+            UnitCodes = UnitCodesByCond;
             variablesOfInterest = {'unit_category','unit_id_by_category','unit_contribution','padded_unit_id','condition','radius'};
             [UnitCodesByCond,~,G] = unique(UnitCodes(:,variablesOfInterest));
             ttest_output = splitapply_local(@myttest, UnitCodes.accuracy - 0.5, G);
@@ -43,6 +45,7 @@ function [ UnitCodesByCond ] = PrepareToPlot( UnitCodesByCond, varargin )
 %             UnitCodesByCond.rgb = generate_rgb_searchlight(UnitCodesByCond,crit_t);
             
         case {'lasso','soslasso'}
+            UnitCodes = merge_baseprobability(p.Results.UnitCodes,p.Results.BaseProbability);
             nsubj = numel(categories(UnitCodes.subject));
             variablesOfInterest = {'unit_category','unit_id_by_category','unit_contribution','padded_unit_id','condition'};
             [UnitCodesByCond,~,G] = unique(UnitCodes(:,variablesOfInterest));

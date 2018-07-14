@@ -3,7 +3,10 @@
 % Suppress Warnings about repmat(0,...) and repmat(1,...). It is a
 % deliberate choice to maintain consistent syntax.
 %#ok<*RPMT0,*RPMT1> 
-
+DATA_OUTPUT_DIR = 'data_01';
+if ~exist(DATA_OUTPUT_DIR, 'dir')
+    mkdir(DATA_OUTPUT_DIR);
+end
 %% Annotate simulation data
 % ==========
 % 'raw/9c2_all.txt' contains the activation patterns over a neural network
@@ -48,7 +51,7 @@ gu = repmat([
     (1:18)'
     (1:18)'
     ], 10*72, 1);
-gu = categorical(gu);
+% gu = gu;
 % unit_contribution (does it encode information about A, B, both, or
 % neither?)
 uc = repmat([
@@ -65,11 +68,11 @@ uc = categorical(uc, 0:3, {'neither','A','B','both'});
 % Reshape the activation matrix into a vector
 aa = reshape(tmp(:,3:end)',numel(i),1);
 % Subject ID
-ss = ordinal(i(:));
+ss = i(:);
 % Example ID
-ee = ordinal(j(:));
+ee = j(:);
 % Unit ID
-uu = ordinal(k(:));
+uu = k(:);
 % Assemble table from these pieces
 AnnotatedData = table(ss,ct,ee,gr,uu,gu,uc,aa, ...
     'VariableNames',{
@@ -114,8 +117,8 @@ AnnotatedData = AddNoiseChannel(AnnotatedData, UnitsToDistort, NoiseFunc);
 % permuted with SH and AH units, it needs to occur after adding noise.
 ConditionIndex = GenerateConditionIndex(AnnotatedData);
 
-save(fullfile('data','AnnotatedData.mat'), 'AnnotatedData');
-save(fullfile('data','ConditionIndex.mat'), 'ConditionIndex');
+save(fullfile(DATA_OUTPUT_DIR,'AnnotatedData.mat'), 'AnnotatedData');
+save(fullfile(DATA_OUTPUT_DIR,'ConditionIndex.mat'), 'ConditionIndex');
 
 strength_list = 0.4:0.2:1.0;
 for j = 1:numel(strength_list)
@@ -138,15 +141,15 @@ for j = 1:numel(strength_list)
         'subject', num2cell(1:10), ...
         'targets', T, ...
         'cvind', {cvind}, ...
-        'coords', mat2cell(reshape(rmfield(coords,'subject'),10,5),ones(10,1),5)', ...
+        'coords', mat2cell(reshape(rmfield(coords,'subject'),10,6),ones(10,1),6)', ...
         'filters', num2cell(rmfield(filters,'subject')), ...
         'nrow', size(data(1).X,1), ...
         'ncol', size(data(1).X,2));
 
     for i = 1:10
-        f = fullfile('data',sprintf('s%02d_noise%03d.mat', i, floor(strength*100)));
+        f = fullfile(DATA_OUTPUT_DIR,sprintf('s%02d_noise%03d.mat', i, floor(strength*100)));
         X = data(i).X;
         save(f, 'X');
     end
-    save(fullfile('data','metadata.mat'), 'metadata');
+    save(fullfile(DATA_OUTPUT_DIR,'metadata.mat'), 'metadata');
 end

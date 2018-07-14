@@ -19,10 +19,10 @@ function D = AddPaddingUnits(d,groups,sz)
 % (A second new variable, called "padded_blocks", is also created. It
 % groups the units with respect to the GroupsToIsolate structure, and
 % allocated the right amount of padding to each.)
-	subjects = categories(d.subject);
-    example_id = categories(d.example_id);
-    z = d.subject == subjects{1} & ...
-        d.example_id == example_id{1};
+	subjects = unique(d.subject);
+    example_id = unique(d.example_id);
+    z = d.subject == subjects(1) & ...
+        d.example_id == example_id(1);
 	N = cell2struct( ...
         num2cell(countcats(d.unit_category(z))), ...
         categories(d.unit_category));
@@ -30,21 +30,21 @@ function D = AddPaddingUnits(d,groups,sz)
     N.examples = numel(example_id);
 
     ngroups = numel(groups);
-    subjects = categories(d.subject);
-    examples = categories(d.example_id);
+    subjects = unique(d.subject);
+    examples = unique(d.example_id);
     nPaddingUnits = (ngroups) * sz;
     
-    [k,j,i] = ndgrid(1:nPaddingUnits,str2double(examples),str2double(subjects));  
-    subject = categorical(i(:));
-    example_id = categorical(j(:));
+    [k,j,i] = ndgrid(1:nPaddingUnits,examples,subjects);  
+    subject = i(:);
+    example_id = j(:);
     example_category = categorical(j(:) > 36, [0,1], {'A','B'});
         unit_category = categorical( ...
         ones(numel(k),1) * 8, ...
         1:8, ...
         {'SI','AI','SH','AH','SO','AO','noise','padding'}, ...
         'Ordinal',true);
-    unit_id_by_category = categorical(k(:));
-    unit_id = categorical(k(:) + max(str2double(categories(d.unit_id))));
+    unit_id_by_category = k(:);
+    unit_id = k(:) + max(unique(d.unit_id));
     unit_contribution = categorical(ones(numel(k),1),1,{'neither'});
     
     activation = zeros(numel(k), 1);
@@ -99,6 +99,6 @@ function D = AddPaddingUnits(d,groups,sz)
         'unit_id_by_category'
         });
     
-    MaxUnitID = max(str2double(categories(D.unit_id)));
+    MaxUnitID = max(D.unit_id);
     D.padded_unit_id = repmat((1:MaxUnitID)', N.examples * N.subjects, 1);
 end
