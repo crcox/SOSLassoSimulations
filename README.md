@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/125253470.svg)](https://zenodo.org/badge/latestdoi/125253470)
+
 # SOS LASSO Simulations
 The code in this repository is intended to be used in conjunction with [`WISC_MVPA`](https://github.com/crcox/WISC_MVPA) and [`InputSetup`](https://github.com/crcox/InputSetup), which are the same code bases used to run full scale LASSO, Ridge, and SOS LASSO analyses on full scale data.
 
