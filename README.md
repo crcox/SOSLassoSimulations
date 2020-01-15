@@ -60,3 +60,45 @@ Once the data have been generated, running the analysis is a matter of pointing 
 
 ### Multivariate
 All multivariate analyses are run using the WISC MVPA package linked above. The setup procedure ensures that the data are in a convenient format to work with this package. The package is well suited for high-throughput computing, which really speeds up the simulations.
+
+Check out [`results/lasso/tune/HB_0/stub.yaml`](results/lasso/tune/HB_0/stub.yaml). It contains
+a host of parameters that configure the analysis to be run. The
+`stub.yaml` file is intended to be passed to `InputSetup/setupJobs`,
+which is a python script that relies on pandas, numpy, and pyyaml. The
+hyperparameter space is searched using [Hyperband](http://www.jmlr.org/papers/volume18/16-558/16-558.pdf) ([tutorial
+overview](https://homes.cs.washington.edu/~jamieson/hyperband.html)).
+
+The result of processing the yaml file will be a set of numbered
+directories, each including a json file that specifies a specific
+analysis. This is ideal for launching the whole set in parallel on a
+high throughput computing cluster, but can be run locally using a script
+like
+[`results/lasso/tune/HB_0/run_all.mat`](results/lasso/tune/HB_0/run_all.mat)
+that enters each directory and executes the `WISC_MVPA` program.
+
+This will complete the tuning step. The [`bin/ChooseBestConfig.m`](bin/ChooseBestConfig.m)
+function can be used to determine which configuration is best. New
+models should then be fit to the data using these parameters, with cross
+validation to assess model performance, and without cross validation for
+"visualization" (i.e., unit selection). These new analyses can be performed by modifying the
+`stub.yaml` file.
+
+**Visualization vs Performance:** A "visualization" analysis has the
+goal of unit selection; a "performance" analysis has the goal of
+assessing model generalization performace.
+
+A visualization analysis involves only 1 round of cross valdiation, to
+identify the parameters best for the whole dataset. The modeling will
+terminate with a single model for each subject.
+
+A performance analysis involves 2 rounds of cross validation. This is
+because modeling will terminate with k models per subject, where k is
+the number of cross validation folds for estimating model generalization
+performance. Parameters for each of these k folds must be tuned with
+cross validation, with the final evaluation set of items completely
+excluded from tuning (both the training and testing aspects).
+
+## Figures
+The `bin/` directory contains a number of functions that are specialized
+to each analysis type that will generate SVG figures based on model
+solutions and a SVG template image (stored in the `template/` directory.

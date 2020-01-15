@@ -1,6 +1,6 @@
 function [ t ] = ChooseBestConfig( tune_dir, analysis )
 %CHOOSEBESTCONFIG Wrapper to BestCfgByCondition with expected values by 
-%   Detailed explanation goes hereBestCfgByCondition
+%   analysis type
     T = LoadSimulationResults( tune_dir, analysis, 'AsTable', true );
     switch analysis
         case 'lasso'
