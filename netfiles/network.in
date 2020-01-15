@@ -1,0 +1,17 @@
+addNet DisRepSim
+
+addGroup SI 18 INPUT
+addGroup II 18 INPUT
+addGroup SH 7 -BIASED
+addGroup IH 7 -BIASED
+addGroup SO 18 OUTPUT -BIASED
+addGroup IO 18 OUTPUT -BIASED
+
+connectGroups SI SH SO -projection FULL -mean 1 -range 0
+connectGroups II IH {SO IO} -projection FULL -mean 1 -range 0
+
+deleteGroups bias
+
+orderGroups SI II SH IH SO IO
+
+loadExamples train.ex
