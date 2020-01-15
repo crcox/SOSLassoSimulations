@@ -1,20 +1,19 @@
 % SETUP Construct annotated table of simulation data
 %
-% Suppress Warnings about repmat(0,...) and repmat(1,...). It is a
-% deliberate choice to maintain consistent syntax.
-%#ok<*RPMT0,*RPMT1> 
+addpath('./bin')
 DATA_OUTPUT_DIR = 'data_01';
 if ~exist(DATA_OUTPUT_DIR, 'dir')
     mkdir(DATA_OUTPUT_DIR);
 end
 %% Annotate simulation data
 % ==========
-% 'raw/9c2_all.txt' contains the activation patterns over a neural network
-% for 72 examples (36 category A, 36 category B). Each row is the
-% activation pattern over thw whole network for a single example for a
-% single "subject" (i.e., model state originating from a unique random
-% configuration of weights). Rows are blocked by subject. Columns are
-% ordered as follows:
+% 'raw/simulation_fMRI_nonoise.csv' contains the activation patterns over a
+% neural network for 72 examples (36 category A, 36 category B). Each row
+% is the activation pattern over the whole network for a single example for
+% a single "subject" (i.e., model state originating from a unique random
+% configuration of weights). Rows are blocked by subject. Excluding the
+% first three columns (subject, unitID, type), the columns corresponding to
+% units are ordered as follows:
 %
 % 18 Systematic Input units   'SI' ( 1:18)
 % 18 Arbitrary Input units    'AI' (19:36)
@@ -23,69 +22,9 @@ end
 % 18 Systematic Output units  'SO' (51:68)
 % 18 Arbitrary Output units   'AO' (69:86)
 %
-% N.B. The first column is the example ID and the second is (supposed to
-% be) the subject ID. So, those column ranges above are only accurate after
-% dropping the first 2 columns.
-
-tmp = dlmread('raw/9c2_all.txt');
-% Fastest changing index is k
-[k,j,i] = ndgrid(1:86,1:72,1:10);
-% First 36 are examples of category A items.
-ct = categorical(j(:)>36, 0:1, {'A','B'});
-% Tag each unit with a category label
-gr = repmat([
-    repmat(1,18,1)
-    repmat(2,18,1)
-    repmat(3, 7,1)
-    repmat(4, 7,1)
-    repmat(5,18,1)
-    repmat(6,18,1)
-    ], 10*72, 1);
-gr = categorical(gr, 1:8, {'SI','AI','SH','AH','SO','AO','noise','padding'},'Ordinal',true);
-% unit_id_by_category
-gu = repmat([
-    (1:18)'
-    (1:18)'
-    (1:7)'
-    (1:7)'
-    (1:18)'
-    (1:18)'
-    ], 10*72, 1);
-% gu = gu;
-% unit_contribution (does it encode information about A, B, both, or
-% neither?)
-uc = repmat([
-    repmat(1, 9,1)
-    repmat(2, 9,1)
-    repmat(0,18,1)
-    repmat(3, 7,1)
-    repmat(0, 7,1)
-    repmat(1, 9,1)
-    repmat(2, 9,1)
-    repmat(0,18,1)
-    ], 10*72, 1);
-uc = categorical(uc, 0:3, {'neither','A','B','both'});
-% Reshape the activation matrix into a vector
-aa = reshape(tmp(:,3:end)',numel(i),1);
-% Subject ID
-ss = i(:);
-% Example ID
-ee = j(:);
-% Unit ID
-uu = k(:);
-% Assemble table from these pieces
-AnnotatedData = table(ss,ct,ee,gr,uu,gu,uc,aa, ...
-    'VariableNames',{
-        'subject'
-        'example_category'
-        'example_id'
-        'unit_category'
-        'unit_id'
-        'unit_id_by_category'
-        'unit_contribution'
-        'activation'
-    });
-clear ss ct ee gr uu gu uc aa i j k tmp
+tmp = readtable('raw/simulation_fMRI_nonoise.csv');
+AnnotatedData = ComposeAnnotatedData(tmp);
+clear tmp
 
 %% Add Noise and Padding (to isolate regions)
 % ==========

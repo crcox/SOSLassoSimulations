@@ -11,18 +11,18 @@ normalize_target: none
 # Data and Metadata Paths
 # =======================
 data:
-  - /Users/Chris/src/SOSLassoSimulations/data/s01.mat
-  - /Users/Chris/src/SOSLassoSimulations/data/s02.mat
-  - /Users/Chris/src/SOSLassoSimulations/data/s03.mat
-  - /Users/Chris/src/SOSLassoSimulations/data/s04.mat
-  - /Users/Chris/src/SOSLassoSimulations/data/s05.mat
-  - /Users/Chris/src/SOSLassoSimulations/data/s06.mat
-  - /Users/Chris/src/SOSLassoSimulations/data/s07.mat
-  - /Users/Chris/src/SOSLassoSimulations/data/s08.mat
-  - /Users/Chris/src/SOSLassoSimulations/data/s09.mat
-  - /Users/Chris/src/SOSLassoSimulations/data/s10.mat
+  - C:/Users/chriscox/Documents/GitHub/SOSLassoSimulations/data_01/s01_noise100.mat
+  - C:/Users/chriscox/Documents/GitHub/SOSLassoSimulations/data_01/s02_noise100.mat
+  - C:/Users/chriscox/Documents/GitHub/SOSLassoSimulations/data_01/s03_noise100.mat
+  - C:/Users/chriscox/Documents/GitHub/SOSLassoSimulations/data_01/s04_noise100.mat
+  - C:/Users/chriscox/Documents/GitHub/SOSLassoSimulations/data_01/s05_noise100.mat
+  - C:/Users/chriscox/Documents/GitHub/SOSLassoSimulations/data_01/s06_noise100.mat
+  - C:/Users/chriscox/Documents/GitHub/SOSLassoSimulations/data_01/s07_noise100.mat
+  - C:/Users/chriscox/Documents/GitHub/SOSLassoSimulations/data_01/s08_noise100.mat
+  - C:/Users/chriscox/Documents/GitHub/SOSLassoSimulations/data_01/s09_noise100.mat
+  - C:/Users/chriscox/Documents/GitHub/SOSLassoSimulations/data_01/s10_noise100.mat
 data_var: X
-metadata: /Users/Chris/src/SOSLassoSimulations/data/metadata.mat
+metadata: C:/Users/chriscox/Documents/GitHub/SOSLassoSimulations/data_01/metadata.mat
 metadata_var: metadata
 
 # Metadata Field References
